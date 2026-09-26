@@ -164,3 +164,16 @@ Frontend: Display with tabs + validation UI
 ```
 
 The entire flow is async/parallel where possible to minimize latency.
+
+## Where this stands on Aditya's estate (added 26/09/2026)
+
+This is the Karpathy LLM Council fork (backend FastAPI on :8001, Vite on :5173, OpenRouter).
+It was once served as council.kyoair.com and is **retired on the box** (the estate inventory
+lists `.retired-trash/llm-council/.venv`); it is not in `services-ensure.sh` or
+`tool-registry.tsv`, and the KVM8 apply watcher does not apply it. Requests about
+multi-model council runs on the estate belong to **`ag-council`** (the CLI) or the panel's
+council page (`ag-command-center`), not here.
+
+Install and run per the README (`uv sync`, `cd frontend && npm install`, `./start.sh`); there
+is no test suite (`test_openrouter.py` named above is not in the tree). Commit messages on
+this estate carry `Model: claude-opus-5` or `Model: claude-fable-5-1`.
