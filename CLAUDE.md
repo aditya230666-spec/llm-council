@@ -164,3 +164,59 @@ Frontend: Display with tabs + validation UI
 ```
 
 The entire flow is async/parallel where possible to minimize latency.
+
+## Working from a Claude Code cloud session
+
+### What this repo is, in one line
+
+An unmodified fork of Karpathy's "vibe-coded" LLM Council web app (FastAPI backend on :8001, React/Vite
+frontend on :5173): one question goes to several OpenRouter models, they rank each other anonymously,
+and a chairman model writes the final answer. Conversations are JSON files in `data/conversations/`.
+Note: `test_openrouter.py`, named under "Testing Notes" above, is not in the repo.
+
+### Requests that belong here
+
+- The LLM Council web app itself: the three-stage flow, ranking parsing, OpenRouter calls,
+  council/chairman model list (`backend/config.py`), the chat UI (`frontend/src/`).
+
+### Not here
+
+- The estate's own multi-model council (council3.py "one stroke" roster, run_council.py, joint2.py,
+  model-roster decisions) — **ag-council** (`/home/aditya/council` on the server).
+- The claude-ops plugin — **claude-ops**. Panel/estate checks — **ag-command-center**.
+
+### Install / build / test / sweep
+
+- Install: `uv sync` (backend) and `cd frontend && npm install` (frontend; `npm ci` also works — a
+  lockfile is committed).
+- Build: `cd frontend && npm run build` (Vite; builds cleanly as of 26/09/2026).
+- Lint: `cd frontend && npm run lint` — **fails on the untouched fork** (4 pre-existing
+  `no-unused-vars` errors, measured 26/09/2026). Do not claim it passed unless you fixed them.
+- Test / sweep: **none found** — there is no test suite. The only backend check available offline is
+  an import: `uv run python -c "import backend.main"`.
+- Run: `./start.sh`, or `uv run python -m backend.main` plus `cd frontend && npm run dev`.
+
+### Live-server-only checks
+
+- Any real council run needs `OPENROUTER_API_KEY` in `.env` and paid OpenRouter credit; a cloud
+  session has neither. The UI needs a browser.
+- Health: there is no `/healthz`. `GET /` on the backend is its health check:
+  `curl -fsS http://127.0.0.1:8001/` → `{"status": "ok", "service": "LLM Council API"}`.
+
+### Shipping a change
+
+1. Work on a branch, never on `master` (this fork's default branch).
+2. Run install, the frontend build, lint and the backend import check.
+3. Open a PR to the default branch. Its description's FIRST line may be exactly
+   `BUILD AND SWEEP PASSED` **only if** install, build and sweep genuinely passed — the server
+   applies such PRs automatically. This repo has no sweep and its lint is red today, so say plainly
+   what ran, what failed before your change, and what could not run in the cloud (OpenRouter calls,
+   a browser); otherwise do not use that phrase.
+4. One app's change per PR.
+
+### Server facts
+
+- Folder on the server: not recorded in any repository; confirm with the inventory paste.
+- Ports: backend 8001 (`backend/main.py`), frontend dev server 5173. Not listed in
+  `ag-bin/tool-registry.tsv`, and no service entry for it was found.
+- Start: `./start.sh` (starts both, Ctrl+C stops both). No restart mechanism is recorded.
